@@ -62,12 +62,11 @@ print("\n\n***** Problem 2 *****")
 ## The function should return the new list of accumulated -- mapped! -- values.
 ## HINT: you should be able to write this in 5 lines of code or fewer! 
 
-def personal_map(f, lst):
+def personal_map(f,lst):
     new_lst = []
     for x in lst:
         new_lst.append(f(x))
     return new_lst
-
 
 ## [PROBLEM 3]
 print("\n\n***** Problem 3 *****")
@@ -83,7 +82,6 @@ def access_third_elem(seq):
 
 # Write your equivalent function and assignment statement here
 sample_func = (lambda x: x[2])
-
 
 ## [PROBLEM 4]
 print("\n\n***** Problem 4 *****")
@@ -102,8 +100,6 @@ student_tups_list = list(student_tups)
 
 ## You can test this out with any code you like here, and similar below other problems, but make sure to comment out any code that uses up the iterator in order to pass the tests!
     
-
-
 ## [PROBLEM 5]
 print("\n\n***** Problem 5 *****")
 # Use a list comprehension to create a list of Student instances out of the student_tups list you just created in Problem 2, and save that list in a variable called programmers. You should make sure you pass these tests before continuing, as you'll need this list for problems later on!
@@ -152,8 +148,6 @@ print("\n\n***** Problem 9 *****")
 names_with_not_too_much_seniority = [x for (x,y,z) in student_tups_list if len(x) > y]
 
 
-
-
 ## [PROBLEM 10]
 print("\n\n***** Problem 10 *****")
 
@@ -187,13 +181,11 @@ def len_check(lines):
 def main_filterer(filenames):
   return len_check(readfiles(filenames))
 
-
-
-## Uncomment this code to test so you can see easily what results from your code. DO uncomment it. DO NOT delete or change it. (You can add other code above while you work, of course.)
-# provided_file_names = ["samplehw6_1.txt","samplehw6_2.txt"]
-# for ln in main_filterer(provided_file_names):
-#     print(ln.rstrip('\n'), end=" ")
-#####
+# Uncomment this code to test so you can see easily what results from your code. DO uncomment it. DO NOT delete or change it. (You can add other code above while you work, of course.)
+provided_file_names = ["samplehw6_1.txt","samplehw6_2.txt"]
+for ln in main_filterer(provided_file_names):
+    print(ln.rstrip('\n'), end=" ")
+####
 
 
 ##### TESTS BELOW THIS LINE. DO NOT CHANGE ANY CODE BELOW THIS LINE. #####
