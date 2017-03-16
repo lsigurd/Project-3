@@ -35,6 +35,10 @@ class Student():
         self.num_programs = self.num_programs + s
         return self.num_programs
 
+    def programming_productivity(self):
+        self.programming_productivity = self.num_programs/self.years_UM
+        return self.programming_productivity
+
 #### DONE WITH STUDENT CLASS DEFINITION
 
     
@@ -103,8 +107,7 @@ student_tups_list = list(student_tups)
 ## [PROBLEM 5]
 print("\n\n***** Problem 5 *****")
 # Use a list comprehension to create a list of Student instances out of the student_tups list you just created in Problem 2, and save that list in a variable called programmers. You should make sure you pass these tests before continuing, as you'll need this list for problems later on!
-programmers = [item for item in student_tups_list]
-
+programmers = [Student(x,y,z) for x,y,z in student_tups_list]
 
 ## [PROBLEM 6]
 print("\n\n***** Problem 6 *****")
@@ -117,7 +120,8 @@ print("\n\n***** Problem 6 *****")
 
 ## You may add a method to the Student class if you wish in order to do this, but you do not need to. (If you do, make sure you do not create any syntax errors that keep code/tests from running!)
 
-
+prod_iter = map(lambda student: student.programming_productivity(), programmers)
+prod_list = list(prod_iter)
 
 ## [PROBLEM 7]
 print("\n\n***** Problem 7 *****")
@@ -125,16 +129,17 @@ print("\n\n***** Problem 7 *****")
 
 ## But be careful that if you use answers from previous problems, you use the LISTs you generated, so that all your tests can still pass and you avoid confusion!
 
-
+names_and_productivities = [(s[0].name, s[1]) for s in zip(programmers, prod_list)]
 
 ## [PROBLEM 8]
 print("\n\n***** Problem 8 *****")
 # Use the Python filter function to select the subset of programmers who have names with 5 or more characters. (i.e. ["Albert","Dinesh","Euijin"]) Your result should be an filter object that points to Student instances. Save that filter iterator in a variable called long_names.
 
-
+long_names = filter(lambda s: len(s.name) >= 5, programmers)
+    
 
 ## Then write code to cast the value of long_names to a list and save it in the variable long_names_list. 
-
+long_names_list = list(long_names)
 
 
 ## [PROBLEM 9]
@@ -143,6 +148,8 @@ print("\n\n***** Problem 9 *****")
 # Use a list comprehension to generate a LIST of just the names of those Student instances whose name is longer than their seniority (i.e., ["Albert", "Mai", "Dinesh", "Euijin"]). Assign it to a variable called names_with_not_too_much_seniority.
 
 ## Note that you can use another list you have already created for this problem.
+
+names_with_not_too_much_seniority = [x for (x,y,z) in student_tups_list if len(x) > y]
 
 
 
@@ -162,13 +169,23 @@ print("\n\n***** Problem 10 *****")
 
 ## We have provided files samplehw6_1.txt and samplehw6_2.txt for your use for this problem, which hopefully you have downloaded, so you can test with those file names! The test below also relies upon these files. Of course, you could also create other files for testing.
 
-# Define readfiles (make sure to close the file reference in the right place)
-
+#Define readfiles (make sure to close the file reference in the right place)
+def readfiles(filenames):
+    for f in filenames:
+        fileref = open(f,'r')
+        for line in fileref: 
+            yield line
+        fileref.close()
 
 # Define len_check
-
+def len_check(lines):
+    for l in lines:
+        if len(l) > 40:
+            yield l
 
 # Define main_filterer
+def main_filterer(filenames):
+  return len_check(readfiles(filenames))
 
 
 
