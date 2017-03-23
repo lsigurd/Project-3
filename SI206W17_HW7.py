@@ -133,7 +133,6 @@ tweet_database = cur.execute(query)
 tweet_posted_times = []
 for row in tweet_database:
 	tweet_posted_times.append(row)
-print(tweet_posted_times)
 
 
 # Select all of the tweets (the full rows/tuples of information) that have been retweeted MORE than 2 times, and fetch them into the variable more_than_2_rts.
@@ -172,9 +171,9 @@ conn.close()
 
 # If you want to challenge yourself here -- this function definition (what goes under the def statement) CAN be written in one line! Definitely, definitely fine to write it with multiple lines, too, which will be much easier and clearer.
 
-# def get_twitter_users(s):
-# 	screennames = re.match('(?<=\@)([A-z]|[0-9]|\_)+', s)
-# 	return {x for x in screennames}
+def get_twitter_users(s):
+	screennames = re.findall('(?<=\@)(\w+|\_)', s)
+	return {x for x in screennames}
 
 
 #########
