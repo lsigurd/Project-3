@@ -159,7 +159,7 @@ cur.execute(query)
 
 screen_list = cur.fetchall()
 screen_names = [i[0] for i in screen_list]
-print(screen_names)
+
 # Make a query to select all of the tweets (full rows of tweet information) that have been retweeted more than 25 times. Save the result (a list of tuples, or an empty list) in a variable called more_than_25_rts.
 
 query = "SELECT * FROM Tweets WHERE retweets > 25"
@@ -205,26 +205,24 @@ for desc in description_words:
 for s in list_tup:
 	most_common_char = s[0]
 
-print(most_common_char)
 ## Putting it all together...
 # Write code to create a dictionary whose keys are Twitter screen names and whose associated values are lists of tweet texts that that user posted. You may need to make additional queries to your database! To do this, you can use, and must use at least one of: the DefaultDict container in the collections library, a dictionary comprehension, list comprehension(s). Y
 # You should save the final dictionary in a variable called twitter_info_diction.
 
-query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id)"
+query = "SELECT Users.screen_name, Tweets.text FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id)"
 cur.execute(query)
 keyval = cur.fetchall()
 # print(keyval)
-twitter_info_diction = {}
-# for s in keyval:
-# 	# print(s[0])
-# 	# print(s[1])
-# 	if s[1] not in twitter_info_diction:
-# 		twitter_info_diction[s[1]] = []
-# 	else:
-#    		twitter_info_diction[s[1]].append(s[0])
-# print(twitter_info_diction)
+key_list = [s[0] for s in keyval]
+value_list = [s[1] for s in keyval]
 
-[twitter_info_diction[s[1]] = [] for s in keyval if s[1] not in twitter_info_diction else twitter_info_diction[s[1]].append(s[0])]
+len_keyval = len(keyval)
+twitter_info_diction = {}
+for i in range(len_keyval):
+	if key_list[i] in twitter_info_diction.keys():
+		twitter_info_diction[key_list[i]].append(value_list[i])
+	else:
+   		twitter_info_diction[key_list[i]] = [value_list[i]]
 
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, but it's a pain). ###
 
