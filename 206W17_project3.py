@@ -15,7 +15,7 @@ import json
 import sqlite3
 
 ## Your name: Lauren Sigurdson
-## The names of anyone you worked with on this project:
+## The names of anyone you worked with on this project: Tahmeed 
 
 #####
 
@@ -150,12 +150,16 @@ for row in record_database:
 # Make a query to select all of the user screen names from the database. Save a resulting list of strings (NOT tuples, the strings inside them!) in the variable screen_names. HINT: a list comprehension will make this easier to complete!
 
 query = "SELECT screen_name from Users"
-screenname_database = cur.execute(query)
-screen_names = []
-for row in screenname_database:
-	for s in row:
-		screen_names.append(s)
+# screenname_database = cur.execute(query)
+cur.execute(query)
+# screen_names = []
+# for row in screenname_database:
+# 	for s in row:
+# 		screen_names.append(s)
 
+screen_list = cur.fetchall()
+screen_names = [i[0] for i in screen_list]
+print(screen_names)
 # Make a query to select all of the tweets (full rows of tweet information) that have been retweeted more than 25 times. Save the result (a list of tuples, or an empty list) in a variable called more_than_25_rts.
 
 query = "SELECT * FROM Tweets WHERE retweets > 25"
@@ -175,29 +179,52 @@ for row in descrip_fav:
 
 # Make a query using an INNER JOIN to get a list of tuples with 2 elements in each tuple: the user screenname and the text of the tweet -- for each tweet that has been retweeted more than 50 times. Save the resulting list of tuples in a variable called joined_result.
 
-query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON Tweets.user_id = Users.user_id WHERE Tweets.retweets > 3"
-retweet_join = cur.execute(query)
-joined_result = []
-for row in retweet_join:
-	joined_result.append(row)
-	print(row)
-print(joined_result)
+query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id) WHERE Tweets.retweets > 1"
+cur.execute(query)
+joined_result= cur.fetchall()
+# print(joined_result)
 
 ## Task 4 - Manipulating data with comprehensions & libraries
 
 ## Use a set comprehension to get a set of all words (combinations of characters separated by whitespace) among the descriptions in the descriptions_fav_users list. Save the resulting set in a variable called description_words.
-description_words = descriptions_fav_users
 
+# temp_list = []
+# for line in descriptions_fav_users:
+#  	for word in line.split():
+#  		if word[-1] in '.,/?':
+#  			word = word[0:len(word)-1]
+#  		temp_list.append(word)
+# description_words = set(temp_list)
+
+description_words = {word for line in descriptions_fav_users for word in line.split()}
 
 ## Use a Counter in the collections library to find the most common character among all of the descriptions in the descriptions_fav_users list. Save that most common character in a variable called most_common_char. Break any tie alphabetically (but using a Counter will do a lot of work for you...).
 
+for desc in description_words:
+	list_tup = collections.Counter(desc).most_common(1)
+for s in list_tup:
+	most_common_char = s[0]
 
-
+print(most_common_char)
 ## Putting it all together...
 # Write code to create a dictionary whose keys are Twitter screen names and whose associated values are lists of tweet texts that that user posted. You may need to make additional queries to your database! To do this, you can use, and must use at least one of: the DefaultDict container in the collections library, a dictionary comprehension, list comprehension(s). Y
 # You should save the final dictionary in a variable called twitter_info_diction.
 
+query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id)"
+cur.execute(query)
+keyval = cur.fetchall()
+# print(keyval)
+twitter_info_diction = {}
+# for s in keyval:
+# 	# print(s[0])
+# 	# print(s[1])
+# 	if s[1] not in twitter_info_diction:
+# 		twitter_info_diction[s[1]] = []
+# 	else:
+#    		twitter_info_diction[s[1]].append(s[0])
+# print(twitter_info_diction)
 
+[twitter_info_diction[s[1]] = [] for s in keyval if s[1] not in twitter_info_diction else twitter_info_diction[s[1]].append(s[0])]
 
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, but it's a pain). ###
 
