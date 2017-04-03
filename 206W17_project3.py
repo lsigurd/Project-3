@@ -15,7 +15,7 @@ import json
 import sqlite3
 
 ## Your name: Lauren Sigurdson
-## The names of anyone you worked with on this project: Tahmeed 
+## The names of anyone you worked with on this project: Tahmeed, Michael Braunstein
 
 #####
 
@@ -73,9 +73,6 @@ def get_user_tweets(username):
 
 umich_tweets = get_user_tweets("umich")
 
-# for s in umich_tweets:
-# 	print(s)
-
 ## Task 2 - Creating database and loading data into database
 
 # You will be creating a database file: project3_tweets.db
@@ -129,7 +126,15 @@ for s in umich_tweets:
 
 for s in umich_tweets:
 	for u in s['entities']['user_mentions']:
-		my_var = api.get_user(u['screen_name'])	
+		unique_identifier = "user_{}".format(u['screen_name'])
+		if unique_identifier in CACHE_DICTION:
+			my_var = CACHE_DICTION[unique_identifier]
+		else:
+			my_var = api.get_user(u['screen_name'])	
+			CACHE_DICTION[unique_identifier] = my_var
+			f = open(CACHE_FNAME, 'w')
+			f.write(json.dumps(CACHE_DICTION))
+			f.close()
 		cur.execute('INSERT OR IGNORE INTO Users (user_id, screen_name, num_favs, description) VALUES (?, ?, ?, ?)', (my_var["id_str"], my_var["screen_name"], my_var["favourites_count"], my_var["description"]))
 
 conn.commit()
@@ -150,13 +155,7 @@ for row in record_database:
 # Make a query to select all of the user screen names from the database. Save a resulting list of strings (NOT tuples, the strings inside them!) in the variable screen_names. HINT: a list comprehension will make this easier to complete!
 
 query = "SELECT screen_name from Users"
-# screenname_database = cur.execute(query)
 cur.execute(query)
-# screen_names = []
-# for row in screenname_database:
-# 	for s in row:
-# 		screen_names.append(s)
-
 screen_list = cur.fetchall()
 screen_names = [i[0] for i in screen_list]
 
@@ -179,31 +178,28 @@ for row in descrip_fav:
 
 # Make a query using an INNER JOIN to get a list of tuples with 2 elements in each tuple: the user screenname and the text of the tweet -- for each tweet that has been retweeted more than 50 times. Save the resulting list of tuples in a variable called joined_result.
 
-query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id) WHERE Tweets.retweets > 1"
+query = "SELECT Tweets.text, Users.screen_name FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id) WHERE Tweets.retweets > 50"
 cur.execute(query)
 joined_result= cur.fetchall()
-# print(joined_result)
+
 
 ## Task 4 - Manipulating data with comprehensions & libraries
 
 ## Use a set comprehension to get a set of all words (combinations of characters separated by whitespace) among the descriptions in the descriptions_fav_users list. Save the resulting set in a variable called description_words.
 
-# temp_list = []
-# for line in descriptions_fav_users:
-#  	for word in line.split():
-#  		if word[-1] in '.,/?':
-#  			word = word[0:len(word)-1]
-#  		temp_list.append(word)
-# description_words = set(temp_list)
-
 description_words = {word for line in descriptions_fav_users for word in line.split()}
 
 ## Use a Counter in the collections library to find the most common character among all of the descriptions in the descriptions_fav_users list. Save that most common character in a variable called most_common_char. Break any tie alphabetically (but using a Counter will do a lot of work for you...).
-
+list_tup = []
+word = ''
 for desc in description_words:
-	list_tup = collections.Counter(desc).most_common(1)
-for s in list_tup:
-	most_common_char = s[0]
+	word = word + desc
+new_word = word.lower()
+list_tup = (collections.Counter(new_word).most_common(1))
+sorted_tup = sorted(list_tup, key = lambda x: x[0])
+actual_tup = sorted(sorted_tup, key = lambda x: x[1], reverse = True)
+most_common_char = actual_tup[0][0]
+
 
 ## Putting it all together...
 # Write code to create a dictionary whose keys are Twitter screen names and whose associated values are lists of tweet texts that that user posted. You may need to make additional queries to your database! To do this, you can use, and must use at least one of: the DefaultDict container in the collections library, a dictionary comprehension, list comprehension(s). Y
@@ -212,7 +208,6 @@ for s in list_tup:
 query = "SELECT Users.screen_name, Tweets.text FROM Tweets INNER JOIN Users ON instr(Tweets.user_id, Users.user_id)"
 cur.execute(query)
 keyval = cur.fetchall()
-# print(keyval)
 key_list = [s[0] for s in keyval]
 value_list = [s[1] for s in keyval]
 
@@ -225,7 +220,7 @@ for i in range(len_keyval):
    		twitter_info_diction[key_list[i]] = [value_list[i]]
 
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, but it's a pain). ###
-
+conn.close()
 
 ###### TESTS APPEAR BELOW THIS LINE ######
 ###### Note that the tests are necessary to pass, but not sufficient -- must make sure you've followed the instructions accurately! ######
